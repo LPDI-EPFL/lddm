@@ -1,0 +1,17 @@
+__pycache__
+.idea
+.DS_Store
+.venv/
+checkpoints/
+
+# Build artefacts
+dist/
+build/
+*.egg-info/
+
+# User-supplied geometry reference and derived caches
+data/validity3d/
+
+# Downloaded or locally prepared chemical spaces
+data/synspace/
+data/chemical_spaces/

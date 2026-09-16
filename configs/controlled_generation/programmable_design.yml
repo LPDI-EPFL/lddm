@@ -1,0 +1,22 @@
+checkpoint: checkpoints/lddm.ckpt
+protein: examples/kras.pdb
+ligand: examples/kras_ref_ligand.sdf
+output: output/kras_programmable
+seed: 42
+sampling_params:
+  batch_size: 16
+  n_steps: 100
+itergen_params:
+  max_sampling_iter: 6
+  n_samples_per_iter: 64
+  filtering_criterion_global: basic_filter
+  adaptive_thresholds_global: {}
+  fragment_filtering_criterion: basic_filter
+  local_filtering_evaluators: [posebusters_local, validity3d_local, clashes_local, interactions_local]
+  reference_mols_validity3d: data/validity3d/ligands.sdf
+  pb_conf: mol_fast
+  pb_conf_local: mol_fast
+  filter_results: true
+  filtering_criterion_final: filter_results
+  interactions: [UHB, HBAcceptor, HBDonor]
+  reduce: reduce
