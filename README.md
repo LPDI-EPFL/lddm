@@ -12,7 +12,7 @@ LDDM is a pocket-conditioned generative model that supports a broad range of mol
 - Locally programmable design
 - Synthesizable design in virtual chemical spaces
 
-We have tested many of these capabilities in prospective ligand design case studies. Read more about our experimental results on [bioRxiv](todo-add-link).
+We have tested many of these capabilities in prospective ligand design case studies. Read more about our experimental results on [bioRxiv](https://www.biorxiv.org/content/10.64898/2026.09.15.751537v1).
 
 ## Setup
 
