@@ -15,3 +15,6 @@ data/validity3d/
 # Downloaded or locally prepared chemical spaces
 data/synspace/
 data/chemical_spaces/
+
+# Output files
+output/
