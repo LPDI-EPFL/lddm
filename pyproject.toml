@@ -10,16 +10,7 @@ name = "lddm"
 version = "0.1.0"
 requires-python = "==3.11.*"
 dependencies = [
-    # PyTorch ecosystem — wheels served from the pytorch cu124 index (see below)
-    "torch==2.6.0+cu124",
-    "lightning>=2.3.3",
-
-    # PyG — torch-geometric is pure Python (PyPI); torch-scatter needs compiled
-    # CUDA wheels served from the PyG index (see below)
-    "torch-geometric>=2.5.1",
-    "torch-scatter>=2.1.2",
-
-    # Cheminformatics / structural biology
+    # Shared dependencies for CPU and CUDA installations
     "rdkit==2023.9.6",
     "biopython==1.83",
     "prody>=2.4.1",
@@ -28,23 +19,29 @@ dependencies = [
     "useful-rdkit-utils==0.65",
     "fcd==1.2.2",
     "biotite>=1.5.0",
-
-    # Scientific computing
-    "numpy>=1.23.5",
+    # RDKit 2023.9.6 wheels do not support NumPy 2.
+    "numpy==1.26.4",
     "scipy==1.13.0",
     "pandas==2.2.3",
     "pot==0.9.4",
     "einops>=0.8.0",
-
-    # Misc
     "tqdm",
-
-    # Runtime requirement of prolif (imports pkg_resources), not installed by
-    # default on Python 3.11
     "setuptools",
 ]
 
 [project.optional-dependencies]
+cpu = [
+    "torch==2.6.0+cpu",
+    "lightning>=2.3.3",
+    "torch-geometric==2.7.0",
+    "torch-scatter==2.1.2+pt26cpu",
+]
+cuda = [
+    "torch==2.6.0+cu124",
+    "lightning>=2.3.3",
+    "torch-geometric==2.7.0",
+    "torch-scatter==2.1.2+pt26cu124",
+]
 dev = [
     # Logging
     "wandb==0.16.6",
@@ -57,11 +54,23 @@ dev = [
 ]
 
 # ---------------------------------------------------------------------------
-# Index configuration
-# torch* and torch-scatter have CUDA-specific wheels that are not on PyPI;
-# `explicit = true` means uv will only look at that index for the packages
-# listed under [tool.uv.sources], keeping the rest of the resolution on PyPI.
+# CPU and CUDA extras use different PyTorch and PyG wheel indexes.
+# Both extras are locked, but only one can be installed at a time.
 # ---------------------------------------------------------------------------
+[tool.uv]
+conflicts = [[{ extra = "cpu" }, { extra = "cuda" }]]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[[tool.uv.index]]
+name = "pyg-cpu"
+url = "https://data.pyg.org/whl/torch-2.6.0+cpu.html"
+explicit = true
+format = "flat"
+
 [[tool.uv.index]]
 name = "pytorch-cu124"
 url = "https://download.pytorch.org/whl/cu124"
@@ -74,10 +83,14 @@ explicit = true
 format = "flat"
 
 [tool.uv.sources]
-torch = [{ index = "pytorch-cu124" }]
-torchvision = [{ index = "pytorch-cu124" }]
-torchaudio = [{ index = "pytorch-cu124" }]
-torch-scatter = [{ index = "pyg-cu124" }]
+torch = [
+    { index = "pytorch-cpu", extra = "cpu" },
+    { index = "pytorch-cu124", extra = "cuda" },
+]
+torch-scatter = [
+    { index = "pyg-cpu", extra = "cpu" },
+    { index = "pyg-cu124", extra = "cuda" },
+]
 
 [tool.uv.extra-build-dependencies]
 torch-scatter = ["torch"]

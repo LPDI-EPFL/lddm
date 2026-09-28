@@ -16,21 +16,22 @@ We have tested many of these capabilities in prospective ligand design case stud
 
 ## Setup
 
-### Environment 
+### Environment
 
 Clone the repository:
 ```bash
 git clone https://github.com/LPDI-EPFL/lddm.git
+cd lddm
 ```
-Then, install the environment:
+Then, install the CUDA environment for all workflows:
 ```bash
-uv sync
+uv sync --extra cuda --frozen
 ```
-which will install packages in `.venv` in the work directory.
+This installs packages in `.venv` in the work directory. The `cpu` and `cuda` extras are mutually exclusive, and installation takes about 3 to 4 minutes.
 
 To use the environment, run scripts with:
 ```bash
-uv run path/to/script.py
+uv run --extra cuda path/to/script.py
 ```
 or activate the environment before running python:
 ```bash
@@ -38,23 +39,42 @@ source .venv/bin/activate
 python path/to/script.py
 ```
 
+### Tested platform, and hardware
+
+LDDM 0.1.0 was tested on Red Hat Enterprise Linux 9.4 (x86-64) with `uv` 0.11.32, Python 3.11.15, NumPy 1.26.4, and RDKit 2023.9.6. The CUDA environment used PyTorch 2.6.0+cu124 and `torch-scatter` 2.1.2+pt26cu124; the CPU environment used PyTorch 2.6.0+cpu and `torch-scatter` 2.1.2+pt26cpu. The pinned dependencies for both environments are recorded in `uv.lock`.
+
+Sampling with the CPU environment takes 5-10x longer than with an accelerator.
+
+All runtime estimates in this README include program startup. GPU estimates refer to one NVIDIA H100 2g.24GB MIG partition with four CPU cores and 20 GB of system memory. CPU estimates refer to eight Intel Xeon Platinum 8360Y cores and 32 GB of system memory.
+
+### CPU-only basic sampling
+
+The four basic examples below (de novo design, fragment-based design, docking, and partial docking) can also run without a GPU. From the repository root, install the CPU environment:
+
+```bash
+uv sync --extra cpu --frozen
+source .venv/bin/activate
+```
+
+Run any of the four basic example commands with `--device cpu` added. If using `uv run` instead of activating `.venv`, use `uv run --extra cpu python scripts/sample.py ... --device cpu`.
+
 ### Docker container
 
 In case you don't have [`uv`](https://docs.astral.sh/uv/) installed, we also provide a lightweight [Docker](https://www.docker.com/) container, which can be used as a starting working environment.
-In addition to `uv`, [Gnina](https://github.com/gnina/gnina) and [Reduce](https://github.com/rlabduke/reduce) are already pre-installed, which are required for the programmable design workflows. The Python packages must be installed separately via `uv sync`, as described above.
+In addition to `uv`, [Gnina](https://github.com/gnina/gnina) and [Reduce](https://github.com/rlabduke/reduce) are already pre-installed, which are required for the programmable design workflows. The Python packages must be installed separately via `uv sync --extra cuda --frozen`, as described above.
 
 You can pull the image from Docker Hub:
 ```bash
 docker pull schneuing/lddm:0.1.0
 ```
 
-When using the container, make sure that it has access to your system's GPU as well as the `.venv` folder.
+For CUDA workflows, give the container access to your system's GPU and the `.venv` folder.
 
 ### Checkpoint, geometry reference
 
 Download a pretrained checkpoint from [Zenodo](https://zenodo.org/records/22754501):
 ```bash
-wget -P checkpoints/ https://zenodo.org/records/22754501/files/<name>.ckpt
+wget -P checkpoints/ https://zenodo.org/records/22754501/files/lddm.ckpt
 ```
 
 We provide two checkpoints with different licenses. The main checkpoint (`CD+BB+BN`) was partially trained on [BindingNet](http://bindingnetv2.huanglab.org.cn/documentation) which was published with a more restrictive [CC-BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) license. The checkpoint without BindingNet is released under MIT License.
@@ -81,6 +101,8 @@ python scripts/sample.py design \
     --output examples/de_novo_samples.sdf
 ```
 
+Estimated runtime: **about 1 minute 20 seconds on the H100** or **about 12 minutes on the eight-core CPU setup**, producing an SDF with 10 molecule records at `examples/de_novo_samples.sdf`.
+
 ### Fragment-based design
 
 ```bash
@@ -91,6 +113,8 @@ python scripts/sample.py design \
     --checkpoint checkpoints/lddm.ckpt \
     --output examples/grown_samples.sdf
 ```
+
+Estimated runtime: **about 50 seconds on the H100** or **about 14 minutes on the eight-core CPU setup**, producing an SDF with 10 molecule records at `examples/grown_samples.sdf`.
 
 ### Docking
 
@@ -103,6 +127,8 @@ python scripts/sample.py dock \
     --output examples/docked_samples.sdf
 ```
 
+Estimated runtime: **about 55 seconds on the H100** or **about 6 minutes on the eight-core CPU setup**, producing an SDF with 10 molecule records at `examples/docked_samples.sdf`.
+
 ### Partial docking
 
 ```bash
@@ -114,6 +140,8 @@ python scripts/sample.py dock \
     --checkpoint checkpoints/lddm.ckpt \
     --output examples/partially_docked_samples.sdf
 ```
+
+Estimated runtime: **about 45 seconds on the H100** or **about 5 minutes 30 seconds on the eight-core CPU setup**, producing an SDF with 10 molecule records at `examples/partially_docked_samples.sdf`.
 
 ### Important parameters
 
@@ -145,7 +173,7 @@ python scripts/sample.py dock \
 python scripts/generate_programmable_design.py configs/controlled_generation/programmable_design.yml
 ```
 
-Estimated runtime: **8 minutes** for the default KRAS example on one NVIDIA H100 with four CPU cores.
+Estimated runtime: **about 7 minutes** for the default KRAS example. Our reference run produced an SDF with 144 molecules at `output/kras_programmable_samples.sdf`, plus a pocket PDB and per-molecule CSV in `output/`.
 
 ### Synthesizable design
 
@@ -204,8 +232,19 @@ Run synthesizable design with the following command:
 python scripts/generate_programmable_design.py configs/controlled_generation/synthesizable_design.yml
 ```
 
-Estimated runtime: **21 minutes** for the default KRAS example on one NVIDIA H100 with four CPU cores.
+Estimated runtime: **about 22 minutes** for the default KRAS example. Our reference run produced an SDF with 27 molecules at `output/kras_synthesizable_samples.sdf`, plus a pocket PDB and per-molecule CSV in `output/`.
 
-<!-- ## Citing this work
+## Citing this work
 
-TODO -->
+When using LDDM in your research, please cite our paper:
+
+```bibtex
+@article{igashov2026lddm,
+  title={A Unified 3D Generative Model for Synthesizable Structure-Based Drug Design},
+  author={Igashov, Ilia and Schneuing, Arne and Dobbelstein, Adrian W and Morozova, Irina and Neeser, Rebecca M and Zielinski, Kara and Abriata, Luciano Andres and Petruzzella, Aaron S and Pavel Iosub, David R and Gampp, Olivia and others},
+  journal={bioRxiv},
+  pages={2026--09},
+  year={2026},
+  publisher={Cold Spring Harbor Laboratory}
+}
+```
