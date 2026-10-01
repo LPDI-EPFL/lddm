@@ -241,10 +241,11 @@ When using LDDM in your research, please cite our paper:
 ```bibtex
 @article{igashov2026lddm,
   title={A Unified 3D Generative Model for Synthesizable Structure-Based Drug Design},
-  author={Igashov, Ilia and Schneuing, Arne and Dobbelstein, Adrian W and Morozova, Irina and Neeser, Rebecca M and Zielinski, Kara and Abriata, Luciano Andres and Petruzzella, Aaron S and Pavel Iosub, David R and Gampp, Olivia and others},
-  journal={bioRxiv},
-  pages={2026--09},
-  year={2026},
-  publisher={Cold Spring Harbor Laboratory}
+  author={Igashov, Ilia and Schneuing, Arne and Dobbelstein, Adrian W. and Morozova, Irina and Neeser, Rebecca M. and Zielinski, Kara and Abriata, Luciano Andres and Petruzzella, Aaron S. and Pavel Iosub, David R. and Gampp, Olivia and Lyubimov, Artem Y. and Elizarova, Evgenia and Ferrara, Isabella and Sousa, Pedro M. F. and Lemos, Ana R. and Testori, Fabio and Miranda Herrera, Pierre A. and Kanis, Laurin and Schmidt, Joseph and Braza, Mac Kevin E. and Amaro, Rommie E. and Thom{\"a}, Nicolas and Ferraris, Davide M. and Riek, Roland and Fraser, James S. and Schwaller, Philippe and Bronstein, Michael and Correia, Bruno},
+  year = {2026},
+  doi = {10.64898/2026.09.15.751537},
+  publisher = {Cold Spring Harbor Laboratory},
+  URL = {https://www.biorxiv.org/content/early/2026/09/18/2026.09.15.751537},
+  journal = {bioRxiv}
 }
 ```
