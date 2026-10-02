@@ -249,3 +249,7 @@ When using LDDM in your research, please cite our paper:
   journal = {bioRxiv}
 }
 ```
+
+## Reproduction instructions
+
+Samples/metrics for reproducing computational benchmarks and experimental raw data can be downloaded from [zenodo.org/records/23097713/files/data-20261002T080534Z-1-001.zip](https://zenodo.org/records/23097713/files/data-20261002T080534Z-1-001.zip).
