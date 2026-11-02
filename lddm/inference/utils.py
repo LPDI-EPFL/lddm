@@ -13,7 +13,7 @@ from lddm.model.lightning import LDDM
 
 
 def get_model_params(checkpoint_path, args):
-    model_params = torch.load(checkpoint_path, map_location=args.device, weights_only=False)['hyper_parameters']
+    model_params = torch.load(checkpoint_path, map_location=args.device, weights_only=True)['hyper_parameters']
     model_params = LDDMConfig.from_dict(model_params, strict=False)
 
     # Update parameters
@@ -35,7 +35,7 @@ def get_model_params(checkpoint_path, args):
 def load_model(args):
     chkpt_path = Path(args.checkpoint)
     model_params = get_model_params(chkpt_path, args)
-    model = LDDM.load_from_checkpoint(chkpt_path, map_location=args.device, weights_only=False, **model_params)
+    model = LDDM.load_from_checkpoint(chkpt_path, map_location=args.device, weights_only=True, **model_params)
     
     logging.debug(f"Sampler: {type(model.sampler).__name__}")
 
